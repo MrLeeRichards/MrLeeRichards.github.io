@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Diamond Square</title>
+   <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+   <script>
+      function MakeMap(canvas, size, intervalTime, button) {
+         var ctx = canvas.getContext("2d");
+
+         var scale = size - 1;
+         var heightmap = [];
+         for (var x = 0; x < size; x++) {
+            heightmap.push([]);
+            for (var y = 0; y < size; y++) {
+               heightmap[x].push(0);
+            }
+         }
+         
+         heightmap[0][0] = Math.random();
+         heightmap[0][scale] = Math.random();
+         heightmap[scale][0] = Math.random();
+         heightmap[scale][scale] = Math.random();
+         
+         var fillCommands = [];
+         fillCommands.push([heightmap[0][0], 0, 0]);
+         fillCommands.push([heightmap[0][scale], 0, scale]);
+         fillCommands.push([heightmap[scale][0], scale, 0]);
+         fillCommands.push([heightmap[scale][scale], scale, scale]);
+
+
+         scale = Math.floor(scale / 2);
+         while (scale > 0) {
+            var sum = 0, count = 0;
+
+            // Square
+            for (var x = scale; x < size; x += scale * 2) {
+               for(var y = scale; y < size; y += scale * 2) {
+                  sum += (x - scale >= 0) && (y - scale >= 0) ? (count++, heightmap[x - scale][y - scale]) : 0
+                  sum += (x + scale < size) && (y - scale >= 0) ? (count++, heightmap[x + scale][y - scale]) : 0
+                  sum += (x - scale >= 0) && (y + scale < size) ? (count++, heightmap[x - scale][y + scale]) : 0
+                  sum += (x + scale < size) && (y + scale < size) ? (count++, heightmap[x + scale][y + scale]) : 0
+                  heightmap[x][y] = sum / count + ((Math.random() - 0.5) * (scale * 1.25 / size));
+                  fillCommands.push([heightmap[x][y], x, y]);
+                  sum = 0, count = 0;
+               }
+            }
+
+            // Diamond
+            for (var x = 0; x < size; x += scale) {
+               var evenStep = (x / scale) % 2 == 0 
+               for(var y = evenStep ? scale : 0; y < size; y += scale * 2) {
+                  sum += (x - scale >= 0) ? (count++, heightmap[x - scale][y]) : 0
+                  sum += (x + scale < size) ? (count++, heightmap[x + scale][y]) : 0
+                  sum += (y - scale >= 0) ? (count++, heightmap[x][y - scale]) : 0
+                  sum += (y + scale < size) ? (count++, heightmap[x][y + scale]) : 0
+                  heightmap[x][y] = sum / count + ((Math.random() - 0.5) * (scale * 2 / size));
+                  fillCommands.push([heightmap[x][y], x, y]);
+                  sum = 0, count = 0;
+               }
+            }
+            scale = Math.floor(scale / 2);
+         }
+
+         if (intervalTime > 0) {
+            var fcIndex = 0;
+            var interval = setInterval(function() {
+               ctx.fillStyle = "rgb(#, #, #)".replace(/#/g, Math.floor(fillCommands[fcIndex][0] * 256).toString());
+               ctx.fillRect(fillCommands[fcIndex][1], fillCommands[fcIndex][2], 1, 1);
+               fcIndex++;
+
+               if (fcIndex >= fillCommands.length) {
+                  clearInterval(interval);
+                  if (button) {
+                     button.show();
+                  }
+               }
+            }, intervalTime);
+         } else {
+            for (var i = 0; i < fillCommands.length; i++) {
+               ctx.fillStyle = "rgb(#, #, #)".replace(/#/g, Math.floor(fillCommands[i][0] * 256).toString());
+               ctx.fillRect(fillCommands[i][1], fillCommands[i][2], 1, 1);
+            }
+
+            if (button) {
+               button.show();
+            }
+         }
+      }
+
+      $(function() {
+         $("#aRun9x9").on("click", function() {
+            $("#aRun9x9").hide();
+            MakeMap(document.getElementById("can9x9"), 9, 500, $("#aRun9x9"));
+         });
+         
+         $("#aRun33x33").on("click", function() {
+            $("#aRun33x33").hide();
+            MakeMap(document.getElementById("can33x33"), 33, 20, $("#aRun33x33"));
+         });
+
+         $("#aRun257x257").on("click", function() {
+            $("#aRun257x257").hide();
+            MakeMap(document.getElementById("can257x257"), 257, 0, $("#aRun257x257"));
+         });
+      });
+   </script>
+   <div class="BloggishText">
+      <a class="Home" href="../index.html"></a>
+      <h2>The Diamond Square Algorithm</h2>
+      <div class="TextSection">
+         <p>
+            I do know the name for this algorithm, because it conveniently pertains to how the algorithm works.
+            This is a useful algorithm for generating a nice noisy height-map if you can't be bothered to muck about
+            with Perlin noise.
+         </p>
+         <p>
+            You start by filling in the corner pixels of a square grid with a random height value. Then you find the pixel at the center of that square.
+            Fill that in with the average of the four corner heights, offset by a random value. You now have five filled pixels,
+            and if you use your imagination you can see that the top-left, center, and bottom-left pixels form three corners of a diamond,
+            the fourth corner being off-grid.
+            So do the top-left, center, and top-right, and so on. So you find the center of each of these diamonds and do the same
+            thing, averaging the corner heights and adding a random offset. Now you have squares again. Keep doing this until
+            all pixels are filled in. The only other thing to do is to decrease the magnitude of the random offset with each
+            downscale.
+            Here it is on a 9 x 9 grid:
+         </p>
+         <canvas id="can9x9" width="9" height="9" style="width:257px; border: solid #524c83;"></canvas>
+         <a id="aRun9x9" class="AttachedButton">
+            Go
+         </a>
+
+         <p>
+            Here it is again on a 33 x 33 grid, a little faster:
+         </p>
+         <canvas id="can33x33" width="33" height="33" style="width:257px; border: solid #524c83;"></canvas>
+         <a id="aRun33x33" class="AttachedButton">
+            Go
+         </a>
+      
+         <p>
+            And finally, here on a 257 x 257 grid, as fast as our little JavaScript legs can carry us:
+         </p>
+         <canvas id="can257x257" width="257" height="257" style="border: solid #524c83;"></canvas>
+         <a id="aRun257x257" class="AttachedButton">
+            Go
+         </a>
+
+         <p>
+            By the bye, the numbers aren't chosen completely at random. My implementation works only
+            for grids of size 2^n + 1. If you found my explanation woefully inadequate, check out
+            <a href="https://en.wikipedia.org/wiki/Diamond-square_algorithm">Wikipedia article</a> on the topic.
+         </p>
+      </div>
+   </div>
+</body>
+</html>

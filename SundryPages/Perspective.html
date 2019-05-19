@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Perspective</title>
+   <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+   <script>
+      var stars = [];
+      const canvasSize = 500;
+      const canvasCenter = canvasSize / 2;
+      const starfieldSize = canvasSize * 1.5;
+      const starfieldCenter = canvasSize / 2;
+      var warpFactor = .5;
+      var speed = .05;
+      var alpha = .25;
+      var color = "#6c5ceb";
+      var eye;
+
+      $(function() {
+         canZoom = document.getElementById("canZoom");
+         ctx = canZoom.getContext("2d");
+
+         eye = document.getElementById("imgEye");
+
+         for (var i = 0; i < 200; i++) {
+            stars.push([starfieldSize * Math.random(), starfieldSize * Math.random(), starfieldSize * Math.random()]);
+         }
+
+         $("#inSpeed").val(speed);
+         $("#inSpeed").on("change", function() { speed = $("#inSpeed").val(); });
+         $("#inWarp").val(warpFactor);
+         $("#inWarp").on("change", function() { warpFactor = $("#inWarp").val(); });
+         $("#inColor").val(color);
+         $("#inColor").on("change", function() { color = $("#inColor").val(); });
+         $("#inTraleLength").val(1 - alpha);
+         $("#inTraleLength").on("change", function() { alpha = 1 - $("#inTraleLength").val(); });
+
+         setInterval(function () {
+            ctx.globalAlpha = alpha;
+
+            for (var i = 0; i < 200; i++) {
+               ctx.globalCompositeOperation = "screen";
+               ctx.drawImage(eye,
+                            (stars[i][0] - starfieldCenter) / stars[i][2] * warpFactor + canvasCenter - 10 / (stars[i][2] * warpFactor),
+                            (stars[i][1] - starfieldCenter) / stars[i][2] * warpFactor + canvasCenter - 10 / (stars[i][2] * warpFactor),
+                            20 / (stars[i][2] * warpFactor), 20 / (stars[i][2] * warpFactor));
+
+               stars[i][2] -= speed;
+               if (stars[i][2] < 0) {
+                  stars[i][2] += starfieldSize;
+                  stars[i][0] = starfieldSize * Math.random();
+                  stars[i][1] = starfieldSize * Math.random();
+               }
+            }
+            ctx.fillStyle = color;
+            ctx.globalCompositeOperation = "multiply";
+            ctx.fillRect(0,0,canvasSize,canvasSize);
+         },1);
+      });
+   </script>
+   <img id="imgEye" src="../eyeParticle.png" alt="Nope" style="display: none;">
+
+   <div class="BloggishText">
+      <a class="Home" href="../index.html"></a>
+      <h2>Rendering Perspective</h2>
+      <div class="TextSection">
+         <p>
+            This is an experiment in rendering 3D with perspective. There's no 3D graphics libraries involved,
+            just plain old HTML5 Canvas.
+         </p>
+         
+         <input id="inColor" type="color" />
+         <input id="inTraleLength" title="trail length" type="range" min="0" max="1" step="0.01">
+         <input id="inSpeed" title="speed" type="range" min="0.01" max=".1" step="0.0025">
+         <input id="inWarp" title="warp factor" type="range" min="0.01" max="5" step="0.01">
+         <canvas id="canZoom" width="500" height="500"></canvas>
+      </div>
+   </div>
+</body>
+</html>	
