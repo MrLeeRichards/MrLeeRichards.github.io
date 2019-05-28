@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Proper PCG</title>
+   <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+   <script>
+
+   </script>
+
+   <div class="BloggishText">
+      <a class="Home" href="../index.html"></a>
+      <h2>Effective Procedural Content Generation</h2>
+      <div class="TextSection">
+         <p>
+            Procedural Content Generation (PCG) is a deceptively magical concept.
+            You leave some blanks in your game's content where you can plug in some random
+            number generators, and poof! Infinite replay value! Just about any type of content
+            can be treated this way. Need a color scheme for an opposing faction? Plug random number generators
+            into your RGB channels, and you've got the entire range of possible color schemes embedded
+            into your game. Want a new level for your dungeon? Pre-fabricate some elements and randomly
+            throw them onto the grid. Need enemies for that dungeon? You've got stats for strength,
+            health, mana, luck, and so on, that are just begging for some pseudo-random goodness.
+            Names, puzzles, weapons, even story plots are all just data. Define the space of possibilities,
+            and traverse the space at run-time. The world is your oyster...
+         </p>
+         <p>
+            ... And just like any other apparently magical technique, the people who use it can be tempted to forget
+            the obvious. Procedural Content Generation can be done badly, and it has been. If you plug in random
+            numbers and choices anywhere they fit, you may indeed create something fun to play, and indeed,
+            a chimpanzee on a type-writer may occassionally create something fun (or indeed possible) to read.
+            However, if you want your PCG engine to produce engaging content consistently, you need to apply
+            constraints that will increase the chances of that happening.
+         </p>
+         <p>
+            I don't claim to be an expert on PCG. I certainly don't have any credentials to that effect (I don't even
+            know if someone can obtain credentials in PCG), but I don't think that what I have to say is really
+            about PCG as such. It's more about not using PCG as a substitute for creativity or design sense.
+            Everything I will say after this point is briefly comprehended in this principle: If you are allowing a
+            process to make random choices, present it only with good choices. So, with this in mind, here is my
+            perpetually incomplete list of principles for effective PCG. Let me stress that these are principles. A
+            principle I would define as something that you might want try first, and might want to consider trying
+            again when free-styling isn't working out for you.
+         </p>
+         <div class="LinkList">
+            <a href="RandomizeLittleDeriveMuch.html">Randomize Little. Derive Much.</a>
+            <a href="UseMoreThanOne.html">Use More Than One Generator for the Same Type of Content.</a>
+         </div>
+      </div>
+   </div>
+</body>
+</html>	

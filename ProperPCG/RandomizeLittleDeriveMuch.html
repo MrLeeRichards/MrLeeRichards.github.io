@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Randomize Little. Derive Much.</title>
+   <link rel="stylesheet" href="../site.css">
+</head>
+<body>
+   <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+   <script>
+      $(function () {
+         var canUnconstrained = document.getElementById("canUnconstrained");
+         var ctxUnconstrained = canUnconstrained.getContext("2d");
+
+         var canConstrained = document.getElementById("canConstrained");
+         var ctxConstrained = canConstrained.getContext("2d");
+
+         setInterval(function () {
+            // Generate Unconstrained color scheme
+            ctxUnconstrained.clearRect(0,0,300,100);
+            ctxUnconstrained.beginPath();
+            ctxUnconstrained.arc(50,50,50,0,2*Math.PI);
+            ctxUnconstrained.fillStyle = "rgb(" + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) + ")";
+            ctxUnconstrained.fill();
+            ctxUnconstrained.beginPath();
+            ctxUnconstrained.arc(100,50,50,0,2*Math.PI);
+            ctxUnconstrained.fillStyle = "rgb(" + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) + ")";
+            ctxUnconstrained.fill();
+            ctxUnconstrained.beginPath();
+            ctxUnconstrained.arc(150,50,50,0,2*Math.PI);
+            ctxUnconstrained.fillStyle = "rgb(" + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) +
+                                         ", " + Math.floor(Math.random() * 256) + ")";
+            ctxUnconstrained.fill();
+
+            // Generate Constrained color scheme
+            ctxConstrained.clearRect(0,0,300,100);
+            var mainHue = Math.floor(Math.random() * 360);
+            var secondaryHue = 0;
+            var tertiaryHue = 0;
+            var brightnessOffset = (25 + Math.floor(Math.random() * 26)) * (Math.random() > .5 ? 1 : -1);
+            var selectColorScheme = Math.random();
+            if (selectColorScheme < 1/3) { // Complementary
+               secondaryHue = (mainHue + 180) % 360; // Opposite side of the color wheel
+               tertiaryHue = Math.random() > 0.5 ? mainHue : secondaryHue;
+            } else if (selectColorScheme < 2/3) { // Analogous
+               secondaryHue = (mainHue + 60) % 360 // Adjacent on color wheel
+               tertiaryHue = (mainHue + 300) % 360; // Adjacent on color wheel, but opposite site (360 - 60)
+            } else { // Monochrome
+               secondaryHue = mainHue;
+               tertiaryHue = mainHue;
+            }
+            ctxConstrained.beginPath();
+            ctxConstrained.arc(50,50,50,0,2*Math.PI);
+            ctxConstrained.fillStyle = "hsl(" + tertiaryHue +
+                                         ", 100%" + 
+                                         ", " + (50 + brightnessOffset) + "%)";
+            ctxConstrained.fill();
+            ctxConstrained.beginPath();
+            ctxConstrained.arc(100,50,50,0,2*Math.PI);
+            ctxConstrained.fillStyle = "hsl(" + secondaryHue +
+                                         ", 100%" + 
+                                         ", " + (50 - brightnessOffset) + "%)";
+            ctxConstrained.fill();
+            ctxConstrained.beginPath();
+            ctxConstrained.arc(150,50,50,0,2*Math.PI);
+            ctxConstrained.fillStyle = "hsl(" + mainHue +
+                                         ", 100%, 50%)"; // It's our main color after all. Let's make it pop.
+            ctxConstrained.fill();
+         }, 1000);
+      });
+   </script>
+
+   <div class="BloggishText">
+      <a class="Home" href="ProperPCG.html"></a>
+      <h2>Randomize Little. Derive Much.</h2>
+      <div class="TextSection">
+         <p>
+            Let's start with a simple example. Suppose you need a three-color scheme for a faction of space pirates.
+            How would you go about it? Well, each color is three channels with a range of 0 to 255 (or more, if you want
+            to ... print some extremely high-fidelity screen caps?). So, that's nine orders of Math.floor(Math.random() * 256),
+            right?, Well you could do that, and if you did, it would generate results like this:
+         </p>
+         <canvas id="canUnconstrained" width="200" height="100"></canvas>
+         <p>
+            Delightful! Occasionally. But mostly not. If your possibility space contains all possible
+            combinations of all possible colors, it will by definition happen to contain combinations of
+            colors that look good. It will also contain the (infinitely larger) space of color combos which look
+            nonsensical. So, as I said, you have to constrain the selection space to the color combinations that
+            look good.
+         </p>
+         <p>
+            How do we go about doing that? Well in the case of our three-color scheme dilemma, we have the benefit of
+            <a href="https://en.wikipedia.org/wiki/Color_theory">color theory</a>, an umbrella name for a set of principles defining what combinations of colors tend
+            to look most pleasing to the greatest number of people. Obviously, it's a complex topic, but let's see
+            how much of an improvement we can get out of applying the most basic ideas from it. Let's pick
+            a hue at random (select from a range of 0 to 360). This will be our main color. Then we'll randomly
+            select one of three types of color schemes, complementary (not complimentary), analogous, or monochrome,
+            and derive our other two colors from that. We'll also make one lighter and one darker than our main color,
+            to emphasize it more. If we go about it in that way, we get results like this:
+         </p>
+         <canvas id="canConstrained" width="200" height="100"></canvas>
+         <p>
+            Now we're cooking. Granted, even with this scheme in place, not all of them are winners. Some of the
+            analogous ones especially can still be a little bit puke-ish. Also, all hues are not created equal. Hues that
+            are firmly on the warm or cool side of the wheel tend to make better main color choices, and some hues
+            are perceived as lighter or darker than others, even if they technically have the same value. Also, this
+            generation scheme doesn't allow for things like pastel (easter egg) color schemes, or greyscale, or color
+            schemes derived from association rather than theory (e.g. rich greens and low saturation browns aren't 
+            theoretically "correct", but they have a strong association with nature that makes them familiar and acceptable).
+         </p>
+         <p>
+            The point I'm trying to make is this. Don't make a purely random selection if your selection process could be
+            more informed. If you've already picked a color, you now have the data needed to do something more deliberate than
+            using the same random process to pick another color. If you've generated a region's geography and climate, and
+            you're now in the process of picking out the inhabitants' clothes, don't randomly select from the entire
+            potential wardrobe. You know which climate your inhabitants are inhabiting, so dress them accordingly!
+            Don't give them beachware if they're living in a tundra!
+         </p>
+         <p>
+            In short, think about the context of what your generating. The more of the context your PCG engine factors
+            into its selection process, the more intentional its choices will appear, and the more cohesive the
+            resulting experience will be. You can take this principle even further. Generate data that never
+            manifests in a way the player directly experiences, but gives you something from which to derive.
+            For example, if you have a family for which you want to generate members, generate some stats for that
+            family (e.g. average height, average weight, average hair color, average wealth, etc.). There's no need
+            to put a character with those exact stats in the game, but you can generate apples that fall close to the
+            proverbial tree that you've generated. One way or another, if you want to pull together the experience,
+            give your generator more inputs than just a random number.
+         </p>
+      </div>
+   </div>
+</body>
+</html>	
