@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Action Economy</title>
+</head>
+<body>
+    <style type="text/css">
+        body {
+            font-family: "Helvetica Neue",Helvetica;
+        }
+
+        #tableActions {
+            border-collapse: collapse;
+        }
+        #tableActions td, #tableActions th {
+            padding: 0.5em;
+        }
+        #tableActions tbody > tr:nth-child(odd) > td {
+            background-color: lightgrey;
+        }
+        #tableActions tbody > tr:nth-child(even) > td {
+            background-color: rgb(241, 241, 241);
+        }
+        #tableActions tbody > tr:nth-child(odd).Special > td {
+            background-color: lightblue;
+        }
+        #tableActions tbody > tr:nth-child(even).Special > td {
+            background-color: rgb(208, 232, 240);
+        }
+
+        #tableActions a, #aStartNewTurn {
+            padding: 0.5em;
+            background:black;
+            color:white;
+            border-radius:.5em;
+        }
+        #tableActions a:hover, #aStartNewTurn:hover {
+            padding: 0.5em;
+            background:grey;
+            color:white;
+            border-radius:.5em;
+            cursor: pointer;
+        }
+        #tableActions tr.disabled > td > a {
+            background: inherit;
+            color:grey;
+            cursor: default;
+        }
+        #tableActions tr.Special > td > a {
+            background:rgb(0, 71, 95);
+        }
+        #tableActions tr.Special > td > a:hover {
+            background:rgb(41, 144, 179);
+        }
+        #tableActions tr.disabled > td {
+            color:grey;
+        }
+
+        #inputAdditionalMovement, #inputAP {
+            color: inherit;
+            width:2.5em;
+            border-width:0px;
+            border-radius:.5em;
+            font:inherit;
+        }
+
+        .title {
+            padding: 1em;
+            font-size: 2em;
+        }
+
+        .divAP {
+            font-size: 1.5em;
+        }
+    </style>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script>
+        let actionPoints = 12;
+        let movementUsed = false;
+
+        function UpdateDisplay() {
+            $("#tableActions > tbody > tr.NormalRow").each(function () {
+                var cost = parseInt($(this).data("cost"));
+
+                $(this).find("a").off("click"); //Clear existing listeners so that values don't stack
+                if (cost <= actionPoints) {
+                    $(this).removeClass("disabled");
+                    $(this).find("a").on("click", function () {
+                        actionPoints -= cost;
+                        console.log(cost);
+                        UpdateDisplay();
+                    });
+                } else {
+                    $(this).addClass("disabled");
+                }
+            });
+
+            
+            $("#trMovement").find("a").off("click");
+            $("#trAdditionalMovement").find("a").off("click");
+            if (movementUsed) {
+                var cost = parseInt($("#trAdditionalMovement").data("cost"));
+
+                if (cost <= actionPoints) {
+                    $("#trAdditionalMovement").removeClass("disabled");
+
+                    $("#trAdditionalMovement").find("a").on("click", function () {
+                        actionPoints -= cost;
+                        movementUsed = true;
+
+                        $("#inputAdditionalMovement").val(5);
+                        $("#trAdditionalMovement").data("cost", 1);
+                        $("#spanAdditionalMovement").text(1);
+
+                        UpdateDisplay();
+                    });
+                } else {
+                    $("#trAdditionalMovement").addClass("disabled");
+                }
+
+                $("#trMovement").addClass("disabled");
+            } else {
+                var cost = parseInt($("#trMovement").data("cost"));
+
+                if (cost <= actionPoints) {
+                    $("#trMovement").removeClass("disabled");
+
+                    $("#trMovement").find("a").on("click", function () {
+                        actionPoints -= cost;
+                        movementUsed = true;
+                        UpdateDisplay();
+                    });
+                } else {
+                    $("#trMovement").addClass("disabled");
+                }
+
+                $("#trAdditionalMovement").addClass("disabled");
+            }
+
+            $("#inputAP").val(actionPoints);
+        }
+
+        $(function() {
+            UpdateDisplay();
+
+            $("#inputAdditionalMovement").on("change", function () {
+                var newValue = Math.round($(this).val() / 5.0) * 5;
+                $(this).val(newValue);
+
+                $("#trAdditionalMovement").data("cost", newValue / 5);
+                $("#spanAdditionalMovement").text(newValue / 5);
+                UpdateDisplay();
+            });
+
+            $("#aStartNewTurn").on("click", function () {
+                movementUsed = false;
+                actionPoints = 12;
+
+                if ($("#inputHasted").is(":checked")) {
+                    actionPoints += 6;
+                }
+
+                if ($("#inputSlowed").is(":checked")) {
+                    actionPoints -= 6;
+                }
+
+                $("#inputAdditionalMovement").val(5);
+                $("#trAdditionalMovement").data("cost", 1);
+                $("#spanAdditionalMovement").text(1);
+                UpdateDisplay();
+            });
+
+            $("#inputRogue").on("change", function() {
+                if ($("#inputRogue").is(":checked")) {
+                    $("#trHideCost").data("cost", 3);
+                    $("#spanHideCost").text(3);
+                } else {
+                    $("#trHideCost").data("cost", 4);
+                    $("#spanHideCost").text(4);
+                }
+                UpdateDisplay();
+            });
+
+            $("#inputHasted").on("change", function() {
+                if ($("#inputHasted").is(":checked")) {
+                    actionPoints += 6;
+                }
+                UpdateDisplay();
+            });
+            $("#inputSlowed").on("change", function() {
+                if ($("#inputSlowed").is(":checked")) {
+                    actionPoints -= 6;
+                }
+                UpdateDisplay();
+            });
+            $("#inputAP").on("change", function() {
+                actionPoints = $("#inputAP").val();
+                UpdateDisplay();
+            });
+        });
+    </script>
+
+    <div style="text-align:center;">
+        <div style="display: inline-block;">
+            <div class="title">Turn Tracker</div>
+            <div class="divAP">Action Points: <input id="inputAP" type="number" min="0"></div>
+            <div style="text-align:left;">
+                <table id="tableActions">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Pts</th>
+                            <th>Use</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-cost="5" class="NormalRow">
+                            <td>Action</td>
+                            <td>5</td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr id="trHideCost" data-cost="4" class="NormalRow">
+                            <td>Disengage, Hide, Drink Potion</td>
+                            <td><span id="spanHideCost">4</span></td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr data-cost="3" class="NormalRow">
+                            <td>Bonus Action</td>
+                            <td>3</td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr id="trMovement" data-cost="2">
+                            <td>Movement</td>
+                            <td>2</td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr id="trAdditionalMovement" data-cost="1">
+                            <td>Move additional <input id="inputAdditionalMovement" type="number" min="5" max="50" step="5" value="5"></inpu> feet</td>
+                            <td><span id="spanAdditionalMovement">1</span></td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr data-cost="2" class="NormalRow">
+                            <td>Reaction</td>
+                            <td>2</td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr data-cost="6" class="NormalRow">
+                            <td>Held Action</td>
+                            <td>6</td>
+                            <td><a>Use</a></td>
+                        </tr>
+                        <tr data-cost="0" class="Special">
+                            <td>Rogue</td>
+                            <td></td>
+                            <td><input id="inputRogue" type="checkbox"></td>
+                        </tr>
+                        <tr data-cost="-6" class="Special">
+                            <td>Hasted</td>
+                            <td>+6</td>
+                            <td><input id="inputHasted" type="checkbox"></td>
+                        </tr>
+                        <tr data-cost="6" class="Special">
+                            <td>Slowed</td>
+                            <td>-6</td>
+                            <td><input id="inputSlowed" type="checkbox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="padding: 2em;">
+                <a id="aStartNewTurn">Start new turn</a>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align:center;">
+        <div style="display: inline-block;">
+            <div style="text-align: left; width: inherit;">
+                <div style="font-weight: bold;">Notes</div>
+                <ul>
+                    <li>Your points reset to 12 at the beginning of your turn</li>
+                    <li>You may only cast one leveled spell and one cantrip per round.</li>
+                    <li>You may take as many reactions per round as your remaining points allow.</li>
+                    <li>You may declare only one held action per round,<br>but the points are used only if you use the held action.</li>
+                    <li><b>Rogues</b> use <b>Bonus Action</b> for Disengage, Hide, and Drink Potion.</li>
+                    <li>Abilities that make dashing a bonus action apply as normal.<br>When dashing with such an ability, use <b>Bonus Action</b>.</li>
+                    <li>The <b>Haste</b> and <b>Slow</b> spells add or remove action points as shown above.
+                        <br>This replaces their standard effects.</li>
+                    <li>Your <b>Game Master</b> may overrule any of the above notes.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
