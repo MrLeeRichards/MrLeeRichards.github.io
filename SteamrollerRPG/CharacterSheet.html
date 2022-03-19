@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet</title>
+</head>
+<body>
+    <style>
+        input.CharacterField {
+            border:none;
+            border-bottom: solid 1px;
+        }
+        
+        textarea.CharacterField {
+            display: block;
+            resize: none;
+        }
+
+        input.PointBox {
+            width:1em;
+        }
+
+        th {
+            text-align: left;
+            border-bottom: solid 1px;
+        }
+        
+        .contentGroup {
+            border: solid 1px;
+            border-radius: 5px;
+            padding:5px;
+            margin:5px;
+            text-align: left;
+        }
+
+        .specialGroup {
+            border: double;
+        }
+
+        div.pageSection {
+            display:flex;
+            padding-top: 5px;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        #divPage1 {
+            margin: 0;
+            padding: 0;
+            width: 8.5in;
+            height: 11in;
+        }
+
+        div.mouseoverInfo {
+            display:inline;
+        }
+        div.mouseoverInfo > div.hiddenInfo {
+            display:none;
+        }
+        div.mouseoverInfo:hover > div.hiddenInfo {
+            display:block;
+            background-color:white;
+            border: solid 1px;
+            border-radius: 5px;
+            position:absolute;
+            padding:10px;
+        }
+
+        @media screen {
+            #aOpenInBrowser { display:none; }
+        }
+
+        @media print {
+            div.mouseoverInfo:hover > div.hiddenInfo, #aPrintToPDF {
+                display:none;
+            }
+
+            #aPrintToPDF { display:none; }
+        }
+    </style>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(function() {
+            var incomingUrlParams = new URLSearchParams(document.location.search);
+            var inputs = incomingUrlParams.keys();
+
+            for (input of inputs) {
+                $("#" + input).val(decodeURIComponent(incomingUrlParams.get(input)));
+            }
+
+            $("#aPrintToPDF").on("click", function() {
+                var newUrlParams = new URLSearchParams();
+
+                $("input, textarea").each(function() {
+                    if ($(this).val()) {
+                        newUrlParams.append($(this).attr("id"), encodeURIComponent($(this).val()));
+                    }
+                });
+
+                $("#aOpenInBrowser").attr("href", "/SteamrollerRPG/CharacterSheet.html?" + newUrlParams.toString())
+
+                window.print();
+            });
+        });
+    </script>
+
+    <div id="divPage1">
+        <div class="contentGroup pageSection">
+            <div>
+                <label for="inCharacterName">Name:</label>
+                <input id="inCharacterName" name="inCharacterName" type="text" class="CharacterField">
+            </div>
+            <div>
+                <div class="mouseoverInfo">
+                    <a id="aPrintToPDF" href="javascript:void(0)">Print/Save</a>
+                    <div class="hiddenInfo" style="width:2in;">
+                        Pro tip: If you select print to PDF, you'll be provided a link to open
+                        the sheet in a browser for editing.
+                    </div>
+                </div>
+                <a id="aOpenInBrowser">Open In Browser</a>
+            </div>
+        </div>
+        <div class="pageSection">
+            <div class="contentGroup" style="width:4.2in;">
+                <div class="mouseoverInfo">
+                    <label for="textDescription">Description:</label>
+                    <div class="hiddenInfo" style="width:4in;">
+                        Appearance, demeanor, personality, other observable details
+                    </div>
+                </div>
+                <textarea id="textDescription"
+                    name="textDescription"
+                    class="CharacterField"
+                    style="width: 4in; height: 1in;"></textarea>
+            </div>
+            <div class="contentGroup" style="width:4.2in;">
+                <div class="mouseoverInfo">
+                    <label for="textInfo">Background:</label>
+                    <div class="hiddenInfo" style="width:4in;">
+                        Backstory, occupation, dark secrets, goals and hopes
+                    </div>
+                </div>
+                <textarea id="textInfo"
+                    name="textInfo"
+                    class="CharacterField"
+                    style="width: 4in; height: 1in;"></textarea>
+            </div>
+        </div>
+        <div class="pageSection">
+            <div class="contentGroup" style="width:4.2in;">
+                <div class="mouseoverInfo">
+                    <label for="textConditions">Conditions:</label>
+                    <div class="hiddenInfo" style="width:4in;">
+                        Ongoing conditions that affect your ability rolls.
+                    </div>
+                </div>
+                <textarea id="textConditions"
+                    name="textConditions"
+                    class="CharacterField"
+                    style="width: 4in; height: 1in;"></textarea>
+            </div>
+            <div class="contentGroup" style="width:4.2in;">
+                <div class="mouseoverInfo">
+                    <label for="textTricks">Tricks:</label>
+                    <div class="hiddenInfo" style="width:4in;">
+                        Special abilities granted by your Conductor, or by setting specific character types.
+                    </div>
+                </div>
+                <textarea id="textTricks"
+                    name="textTricks"
+                    class="CharacterField"
+                    style="width: 4in; height: 1in;"></textarea>
+            </div>
+        </div>
+        <div class="tableGroup pageSection">
+            <div class="contentGroup">
+                <table id="tablePower" style="width:1.75in;">
+                    <thead>
+                        <tr>
+                            <th>Power</th>
+                            <th><input id="inPowerPoints" class="PointBox"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Carry</td>
+                            <td><input id="inCarryPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Exhert</td>
+                            <td><input id="inExhertPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Hit</td>
+                            <td><input id="inHitPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Push/Pull</td>
+                            <td><input id="inPushPullPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Torque</td>
+                            <td><input id="inTorquePoints" class="PointBox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="contentGroup">
+                <table id="tableAgility" style="width:1.75in;">
+                    <thead>
+                        <tr>
+                            <th>Agility</th>
+                            <th><input id="inAgilityPoints" class="PointBox"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Aim</td>
+                            <td><input id="inAimPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Catch</td>
+                            <td><input id="inCatchPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Dodge</td>
+                            <td><input id="inDodgePoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Jump</td>
+                            <td><input id="inJumpPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Sneak</td>
+                            <td><input id="inSneakPoints" class="PointBox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="contentGroup">
+                <table id="tableWit" style="width:1.75in;">
+                    <thead>
+                        <tr>
+                            <th>Wit</th>
+                            <th><input id="inWitPoints" class="PointBox"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Convince</td>
+                            <td><input id="inConvincePoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Observe</td>
+                            <td><input id="inObservePoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Perceive</td>
+                            <td><input id="inPerceivePoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Recall</td>
+                            <td><input id="inRecallPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Rummage</td>
+                            <td><input id="inRummagePoints" class="PointBox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="contentGroup specialGroup">
+                <table id="tableSpecialty" style="width:1.75in;">
+                    <thead>
+                        <tr>
+                            <th>
+                                Specialty
+                            </th>
+                            <th><input id="inSpecialtyPoints" class="PointBox"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Create</td>
+                            <td><input id="inDrawPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Fix</td>
+                            <td><input id="inFixPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Use</td>
+                            <td><input id="inUsePoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Perform</td>
+                            <td><input id="inPerformPoints" class="PointBox"></td>
+                        </tr>
+                        <tr>
+                            <td>Pilot</td>
+                            <td><input id="inPilotPoints" class="PointBox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="pageSection">
+                <div class="contentGroup">
+                    <label for="textSpecialties">Specialties:</label>
+                    <textarea id="textSpecialties"
+                        name="textSpecialties"
+                        class="CharacterField"
+                        style="width: 4in; height: 4in;"></textarea>
+            </div>
+            <div class="contentGroup">
+                <label for="textInventory">Inventory:</label>
+                <textarea id="textInventory"
+                    name="textInventory"
+                    class="CharacterField"
+                    style="width: 4in; height: 4in;"></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
