@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellular Automata</title>
+</head>
+<body>
+    <style>
+        body {
+            background-image: linear-gradient(0.25turn, lightgray, white);
+        }
+        canvas {
+            border-radius: 2em;
+            box-shadow: 0 1em 2em gray;
+        }
+    </style>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script src="CellAuto1.js"></script>
+
+    <div style="text-align: center;">
+        <div id="divCanvasContainer"></div>
+    
+        <div><input type="button" value="New Rules" onclick="randomize()"></div>
+    </div>
+</body>
+</html>

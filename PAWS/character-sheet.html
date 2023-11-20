@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Sheet</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14pt;
+            background-color: darkslategray;
+            color:lightgray;
+        }
+
+        select {
+            font: inherit;
+            color:inherit;
+            background-color: inherit;
+            border:none;
+        }
+
+        option {
+            background-color: darkslategray;
+        }
+        
+        td, th {
+            text-align: left;
+            padding:5pt;
+        }
+
+        input {
+            background-color: inherit;
+            padding:5pt;
+            color:lightgray;
+            border:none;
+            font-size: inherit;
+        }
+
+        input[type="button"] {
+            border:solid 2pt lightgray;
+            border-radius: 5pt;
+        }
+
+        input[type="button"]:hover {
+            background-color: lightgray;
+            color:darkslategray;
+        }
+
+        input.resource {
+            width:2em;
+        }
+
+        #diceRoll {
+            border: 2pt solid lightgray;
+            border-radius: 6pt;
+            padding: 6pt;
+            display: inline-block;
+        }
+
+        #diceDisplay {
+            padding: 12pt;
+        }
+
+        #diceDisplay > div {
+            display: inline-block;
+        }
+
+        #dieOne, #dieTwo {
+            width: 20pt;
+            height: 20pt;
+            text-align: center;
+            vertical-align: middle;
+            border: solid 1pt lightgray;
+            border-radius: 6pt;
+            padding-top:2pt;
+        }
+
+        #rollSummary {
+            padding-bottom: 6pt;
+            font-size: 18pt;
+        }
+    </style>
+
+    <div id="diceRoll">
+        <div id="rollType">Rolling <span id="spanRollType">Wit</span></div>
+        <div id="diceDisplay">
+            <div id="dieOne">2</div>
+            <div id="dieTwo">5</div>
+            <div id="dieBonus">+3</div>
+        </div>
+        <div id="rollSummary">
+            Result: <span id="spanResult">10</span>
+        </div>
+        <input id="rerollGuts" type="button" value="Guts Reroll" />
+        <input id="rerollNerve" type="button" value="Nerve Reroll" />
+    </div>
+
+    <table id="tableStats">
+        <thead>
+            <tr>
+                <th>Stat</th>
+                <th>Bonus</th>
+                <th></th>
+                <th>Resource</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    Power
+                </td>
+                <td>
+                    <select id="choosePower" class="saveValue">
+                        <option value="0">+0</option>
+                        <option value="1">+1</option>
+                        <option value="2">+2</option>
+                        <option value="3">+3</option>
+                    </select>
+                </td>
+                <td>
+                    <input id="rollPower" type="button" class="rollButton" value="roll" />
+                </td>
+                <td rowspan="2">
+                    Guts
+                    <input id="resourceGuts" class="resource"
+                        value="10"
+                        type="number"
+                        max="10"
+                        min="0"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Agility
+                </td>
+                <td>
+                    <select id="chooseAgility" class="saveValue saveValue">
+                        <option value="0">+0</option>
+                        <option value="1">+1</option>
+                        <option value="2">+2</option>
+                        <option value="3">+3</option>
+                    </select>
+                </td>
+                <td>
+                    <input id="rollAgility" type="button" class="rollButton" value="roll" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Wit
+                </td>
+                <td>
+                    <select id="chooseWit" class="saveValue">
+                        <option value="0">+0</option>
+                        <option value="1">+1</option>
+                        <option value="2">+2</option>
+                        <option value="3">+3</option>
+                    </select>
+                </td>
+                <td>
+                    <input id="rollWit" type="button" class="rollButton" value="roll" />
+                </td>
+                <td rowspan="2">
+                    Nerve
+                    <input id="resourceNerve" class="resource saveValue"
+                        value="10"
+                        type="number"
+                        max="10"
+                        min="0"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Social
+                </td>
+                <td>
+                    <select id="chooseSocial" class="saveValue">
+                        <option value="0">+0</option>
+                        <option value="1">+1</option>
+                        <option value="2">+2</option>
+                        <option value="3">+3</option>
+                    </select>
+                </td>
+                <td>
+                    <input id="rollSocial" type="button" class="rollButton" value="roll" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="inOccupation" type="text" class="saveValue" placeholder="Occupation"/>
+                </td>
+                <td>
+                    +4
+                </td>
+                <td>
+                    <input id="rollOccupation" type="button" class="rollButton" value="roll" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="inExpertise" type="text" class="saveValue" placeholder="Expertise"/>
+                </td>
+                <td>
+                    +5
+                </td>
+                <td>
+                    <input id="rollExpertise" type="button" class="rollButton" value="roll" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="occupations.js"></script>
+    <script src="difficulties.js"></script>
+    <script>
+        const fieldGroupName = "pawsCharacter."
+        let bonusSelects = [
+            document.getElementById("choosePower"),
+            document.getElementById("chooseAgility"),
+            document.getElementById("chooseWit"),
+            document.getElementById("chooseSocial"),
+        ];
+        let saveFields = document.querySelectorAll(".saveValue");
+
+        for (let field of saveFields) {
+            if (localStorage.getItem(fieldGroupName + field.id)) {
+                field.value = localStorage.getItem(fieldGroupName + field.id);
+            }
+
+            field.addEventListener("change", function() {
+                localStorage.setItem(fieldGroupName + this.id, this.value);
+            });
+        }
+
+        for (let bonusSelect of bonusSelects) {
+            bonusSelect.addEventListener("change", function () {
+                for (bonusSelect of bonusSelects) {
+                    if (this !== bonusSelect && this.value == bonusSelect.value) {
+                        bonusSelect.value = "0";
+                        localStorage.setItem(fieldGroupName + bonusSelect.id, bonusSelect.value);
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
