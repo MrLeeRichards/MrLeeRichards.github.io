@@ -1,8 +1,8 @@
 const GRID_SIZE = 80;
 const CELL_SIZE = 10;
-const CHANGE = .075;
+const CHANGE = .05;
 const KERNEL_RADIUS = 10;
-const RULE_COUNT = 20;
+const RULE_COUNT = 10;
 
 let neighborhood = [];
 let rules = [];
@@ -86,14 +86,12 @@ function mod(value, modval) {
 }
 
 function activation(index) {
-    return lerp(rules[floor(index * RULE_COUNT)],
-                rules[(floor(index * RULE_COUNT) + 1) % RULE_COUNT],
-                index * RULE_COUNT - floor(index * RULE_COUNT));
+    return rules[floor(index * RULE_COUNT)];
 }
 
 function newRules() {
     for (let i = 0; i < RULE_COUNT; i++) {
-        rules[i] = Math.random();
+        rules[i] = constrain(Math.random() * 3 - 1, 0, 1);
     }
 }
 
