@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seaweed</title>
+</head>
+<body>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        const SEG_HEIGHT = screen.height * .15;
+        const SEG_WIDTH = SEG_HEIGHT * .5;
+        const SEG_SCALE = .95;
+        const MAX_SEG_COUNT = 30;
+
+        const ANGLE_RANGE = .05 * Math.PI * 2;
+
+        const FROND_SPACING = SEG_WIDTH * .5;
+
+        const NOISE_SCALE = .1;
+        const TIME_SCALE = .00005;
+
+        function setup() {
+            noise(1, 1);
+            createCanvas(screen.width, screen.height);
+            noStroke();
+            fill(255);
+        }
+
+        function draw() {
+            background(0);
+
+            for (let x = 0; x < width; x += FROND_SPACING) {
+                resetMatrix();
+                translate(x + noise(x, 1) * FROND_SPACING - FROND_SPACING * .5, height);
+                scale(1,-1);
+
+                let tipColor = color(noise(x, 2) * 255, noise(x, 3) * 120 + 115, 0);
+                let baseColor = lerpColor(tipColor, color(0), .95);
+                let segCount = noise(x, 100) * MAX_SEG_COUNT;
+                let colorScale = 1 / segCount;
+
+                for (let i = 0; i < segCount; i++) {
+                    // i.e. 30 degree range from -15 to +15
+                    rotate(noise(x * NOISE_SCALE, millis() * TIME_SCALE - i * NOISE_SCALE) * ANGLE_RANGE - ANGLE_RANGE * .5);
+
+                    fill(lerpColor(baseColor, tipColor, colorScale * i));
+
+                    // Drawing a diamond
+                    beginShape();
+                    vertex(0,0);
+                    vertex(-SEG_WIDTH * .5, SEG_HEIGHT * .5);
+                    vertex(0, SEG_HEIGHT);
+                    vertex(SEG_WIDTH * .5, SEG_HEIGHT * .5);
+                    endShape(CLOSE);
+
+                    translate(0, SEG_HEIGHT * .5);
+                    scale(SEG_SCALE);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
