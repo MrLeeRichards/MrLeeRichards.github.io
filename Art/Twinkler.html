@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twinkler</title>
+</head>
+<body>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        const WIDTH = Math.min(screen.width, screen.height) * .02;
+        const HEIGHT = WIDTH * 2;
+        const DRIFT = WIDTH * 5;
+
+        function setup() {
+            createCanvas(screen.width, screen.height);
+            noStroke();
+
+            noiseDetail(3, .55);
+        }
+
+        function draw() {
+            blendMode(BLEND);
+            background(0);
+            blendMode(ADD);
+
+            for (let i = 0; i < 200; i++) {
+                fill(
+                    min(noise(i, 5, 1) * noise(i, 7, 1) * 1.5, 1) * 255,
+                    min(noise(i, 6, 1) * noise(i, 7, 1) * 1.5, 1) * 255,
+                    min(noise(i, 7, 1) * 1.5, 1) * 255
+                );
+
+                drawStart(
+                    (noise(i, 1, floor(millis() * .002 * noise(i, 4))) * 2 - .5) * width + ((millis() * .002 * noise(i, 4)) % 1) * DRIFT,
+                    (noise(i, 2, floor(millis() * .002 * noise(i, 4))) * 2 - .5) * height,
+                    noise(i, 3) * sin(millis() * .002 * noise(i, 4) * TWO_PI)
+                );
+
+                fill(
+                    min(noise(i, 5, 2) * noise(i, 7, 2) * 1.5, 1) * 255,
+                    min(noise(i, 6, 2) * noise(i, 7, 2) * 1.5, 1) * 255,
+                    min(noise(i, 7, 2) * 1.5, 1) * 255
+                );
+
+                drawStart(
+                    (noise(i, 1, floor(millis() * .002 * noise(i, 4))) * 2 - .5) * width + ((millis() * .002 * noise(i, 4)) % 1) * DRIFT,
+                    (noise(i, 2, floor(millis() * .002 * noise(i, 4))) * 2 - .5) * height,
+                    noise(i, 3) * sin(millis() * .004 * noise(i, 4) * TWO_PI)
+                );
+            }
+        }
+
+        function drawStart(x, y, size) {
+            beginShape();
+            vertex(x + WIDTH * size, y);
+            vertex(x, y + HEIGHT * size);
+            vertex(x - WIDTH * size, y);
+            vertex(x, y - HEIGHT * size);
+            endShape();
+        }
+    </script>
+</body>
+</html>
