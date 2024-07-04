@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waves</title>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        let BACKGROUND;
+
+        const SQRT_3 = 1.732;
+
+        const X_COUNT = 50;
+        const X_SPACING = screen.width / X_COUNT;
+        const AMPLITUDE = X_SPACING * 25;
+        const Y_COUNT = Math.floor(X_COUNT * ((screen.height + AMPLITUDE)/screen.width) * 2 / SQRT_3);
+        const Y_SPACING = X_SPACING * SQRT_3 / 2;
+        const DIAMETER = X_SPACING * 0.3;
+
+        const NOISE_SCALE = 0.04;
+        const TIME_SCALE = 0.0001;
+
+        function setup() {
+            createCanvas(screen.width, screen.height);
+            noStroke();
+            BACKGROUND = color(0,40,80);
+
+            background(BACKGROUND);
+        }
+
+        function draw() {
+            background(BACKGROUND);
+
+            blendMode(ADD);
+            for (let x = 0; x <= X_COUNT; x++) {
+                for (let y = 0; y <= Y_COUNT; y++) {
+                    fill(
+                        2,
+                        clip(noise(
+                            (x  + (y % 2 == 0 ? 0 : 0.5)) * NOISE_SCALE - millis() * TIME_SCALE,
+                            y * NOISE_SCALE + millis() * TIME_SCALE,
+                            -millis() * TIME_SCALE
+                        )) * 125,
+                        clip(noise(
+                            (x  + (y % 2 == 0 ? 0 : 0.5)) * NOISE_SCALE - millis() * TIME_SCALE * 0.5,
+                            y * NOISE_SCALE + millis() * TIME_SCALE * 0.5,
+                            -millis() * TIME_SCALE
+                        )) * 255
+                    );
+
+                    circle(
+                        x * X_SPACING + (y % 2 == 0 ? 0 : X_SPACING * 0.5),
+                        y * Y_SPACING + noise(
+                            (x  + (y % 2 == 0 ? 0 : 0.5)) * NOISE_SCALE + millis() * TIME_SCALE,
+                            y * NOISE_SCALE - millis() * TIME_SCALE,
+                            millis() * TIME_SCALE * .5) * AMPLITUDE - AMPLITUDE,
+                        DIAMETER
+                    );
+                }
+            }
+
+            blendMode(BLEND);
+        }
+
+        function clip(value) {
+            return constrain(0, value * 3 - 1, 1)
+        }
+    </script>
+</body>
+</html>
