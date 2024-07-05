@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turning</title>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        const LINE_COUNT = 100;
+        const SIZE = Math.max(screen.width,screen.height);
+        const LINE_SCALE = 1 / LINE_COUNT;
+        const TIME_SCALE = 1 / (LINE_COUNT * 10);
+        const AMPLITUDE = SIZE * LINE_SCALE;
+
+        function setup() {
+            createCanvas(screen.width, screen.height);
+            angleMode(DEGREES);
+            noStroke();
+            background(0);
+        }
+
+        function draw() {
+            background(0,20);
+            translate(width * 0.5, height * 0.5);
+
+            for (let i = LINE_COUNT; i >= 0; i--) {
+                fill(
+                    255,
+                    clip(noise(i * 0.2 + millis() * TIME_SCALE, 0)) * 255,
+                    clip(noise(i * 0.2 + millis() * TIME_SCALE, 1)) * 125
+                );
+                rotate(millis() * TIME_SCALE);
+                scale(.9);
+                circle(-(SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), 0, SIZE * 0.02);
+                circle(0, -(SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), SIZE * 0.02);
+                circle((SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), 0, SIZE * 0.02);
+                circle(0, (SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), SIZE * 0.02);
+            } 
+            
+            resetMatrix();
+            translate(width * 0.5, height * 0.5);
+
+            for (let i = LINE_COUNT; i >= 0; i--) {
+                fill(
+                    clip(noise(i * 0.2 + millis() * TIME_SCALE, 0)) * 125,
+                    255,
+                    clip(noise(i * 0.2 + millis() * TIME_SCALE, 1)) * 255
+                );
+                rotate(-millis() * TIME_SCALE);
+                scale(.9);
+                circle(-(SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), 0, SIZE * 0.02);
+                circle(0, -(SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), SIZE * 0.02);
+                circle((SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), 0, SIZE * 0.02);
+                circle(0, (SIZE + sin(millis() * 0.5 + i * 20) * AMPLITUDE * 4), SIZE * 0.02);
+            } 
+        }
+
+        function clip(value) {
+            return constrain(value * 2 - 0.5, 0, 1);
+        }
+    </script>
+</body>
+</html>
