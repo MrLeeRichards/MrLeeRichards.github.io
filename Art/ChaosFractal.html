@@ -48,8 +48,9 @@
                 } else if (vertices[moveTo].type == ROTATE) {
                     rotatePoint(vertices[moveTo].x, vertices[moveTo].y, vertices[moveTo].strength * 360);
                 } else if (vertices[moveTo].type == STREAK) {
-                    pointX = lerp(pointX, vertices[moveTo].x, Math.random());
-                    pointY = lerp(pointY, vertices[moveTo].y, Math.random());
+                    let randStrength = Math.random();
+                    pointX = lerp(pointX, vertices[moveTo].x, randStrength);
+                    pointY = lerp(pointY, vertices[moveTo].y, randStrength);
                 }
 
                 pointColor = lerpColor(pointColor, vertices[moveTo].color, vertices[moveTo].strength);
