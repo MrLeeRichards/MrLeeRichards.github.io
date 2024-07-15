@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaos Fractal</title>
+</head>
+<body>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        const RADIUS = Math.max(screen.width, screen.height) * 0.5;
+        const FIXED = 0;
+        const STREAK = 1;
+        const ROTATE = 2;
+        const OPACITY = 10;
+        
+        let pointX;
+        let pointY;
+        let pointColor;
+
+        let vertices = [];
+        let vertexCount = 0;
+
+        function setup() {
+            createCanvas(screen.width, screen.height);
+            angleMode(DEGREES);
+            noStroke();
+
+            init();
+        }
+
+        function draw() {
+            translate(width * 0.5, height * 0.5);
+
+            for (let i = 0; i < 10000; i++) {
+                let moveTo = Math.floor(Math.random() * vertexCount);
+
+                if (vertices[moveTo].type == FIXED) {
+                    pointX = lerp(pointX, vertices[moveTo].x, vertices[moveTo].strength);
+                    pointY = lerp(pointY, vertices[moveTo].y, vertices[moveTo].strength);
+                } else if (vertices[moveTo].type == ROTATE) {
+                    rotatePoint(vertices[moveTo].x, vertices[moveTo].y, vertices[moveTo].strength * 360);
+                } else if (vertices[moveTo].type == STREAK) {
+                    pointX = lerp(pointX, vertices[moveTo].x, Math.random());
+                    pointY = lerp(pointY, vertices[moveTo].y, Math.random());
+                }
+
+                pointColor = lerpColor(pointColor, vertices[moveTo].color, vertices[moveTo].strength);
+                
+                fill(pointColor);
+                circle(pointX, pointY, 1);
+            }
+        }
+
+        function rotatePoint(cx, cy, angle) {
+            // Translate the point back
+            pointX = (pointX - cx) * cos(angle) - (pointY - cy) * sin(angle) + cx;
+            pointY = (pointX - cx) * sin(angle) + (pointY - cy) * cos(angle) + cy;
+        }
+
+        function init() {
+            const pointCount = Math.floor(Math.random() * 10) + 2;
+            const angle = 360 / pointCount;
+            const randRotate = Math.random() * 360;
+
+            colorMode(HSB, 360, 100, 100, 100);
+
+            vertices = [];
+
+            pointX = Math.random() * width;
+            pointY = Math.random() * height;
+            pointColor = color(Math.random() * 360, 100, 100, OPACITY);
+
+            for (let i = 0; i < pointCount; i++) {
+                vertices.push({
+                    x: sin(i * angle + randRotate) * RADIUS,
+                    y: cos(i * angle + randRotate) * RADIUS,
+                    type: Math.floor(Math.random() * 3),
+                    strength: Math.random(),
+                    color: color(Math.random() * 360, 100, 100, OPACITY)
+                });
+            }
+
+            colorMode(RGB, 255, 255, 255, 255);
+
+            vertexCount = vertices.length;
+
+            blendMode(BLEND);
+            background(0);
+            blendMode(ADD);
+        }
+    </script>
+</body>
+</html>
