@@ -17,8 +17,8 @@
     <script>
         const RADIUS = Math.max(screen.width, screen.height) * 0.5;
         const FIXED = 0;
-        const STREAK = 1;
-        const ROTATE = 2;
+        const ROTATE = 1;
+        const STREAK = 2;
         const OPACITY = 10;
         
         let pointX;
@@ -83,11 +83,19 @@
                 vertices.push({
                     x: sin(i * angle + randRotate) * RADIUS,
                     y: cos(i * angle + randRotate) * RADIUS,
-                    type: Math.floor(Math.random() * 3),
+                    type: Math.floor(Math.random() * Math.random() * 3),
                     strength: Math.random(),
                     color: color(Math.random() * 360, 100, 100, OPACITY)
                 });
             }
+
+            vertices.push({
+                x: 0,
+                y: 0,
+                type: Math.floor(Math.random() * Math.random() * 3),
+                strength: Math.random(),
+                color: color(Math.random() * 360, 100, 100, OPACITY)
+            });
 
             colorMode(RGB, 255, 255, 255, 255);
 
