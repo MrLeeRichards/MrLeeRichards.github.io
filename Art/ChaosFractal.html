@@ -77,7 +77,7 @@
 
             pointX = Math.random() * width;
             pointY = Math.random() * height;
-            pointColor = color(Math.random() * 360, 100, 100, OPACITY);
+            pointColor = color(Math.random() * 360, 95, 100, OPACITY);
 
             for (let i = 0; i < pointCount; i++) {
                 vertices.push({
@@ -85,7 +85,7 @@
                     y: cos(i * angle + randRotate) * RADIUS,
                     type: Math.floor(Math.random() * Math.random() * 3),
                     strength: Math.random(),
-                    color: color(Math.random() * 360, 100, 100, OPACITY)
+                    color: color(Math.random() * 360, 95, 100, OPACITY)
                 });
             }
 
@@ -94,7 +94,7 @@
                 y: 0,
                 type: Math.floor(Math.random() * Math.random() * 3),
                 strength: Math.random(),
-                color: color(Math.random() * 360, 100, 100, OPACITY)
+                color: color(Math.random() * 360, 95, 100, OPACITY)
             });
 
             colorMode(RGB, 255, 255, 255, 255);
