@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>School of Something</title>
+</head>
+<body>
+    <style>
+        body {
+            padding:0px;
+            margin:0px;
+            overflow: hidden;
+        }
+    </style>
+    <script src="/node_modules/p5/lib/p5.min.js"></script>
+    <script>
+        const FISH_COUNT = 500;
+        const FISH_SIZE = Math.min(screen.width,screen.height) * 0.03;
+
+        let color1, color2, color3, color4;
+        
+        const X_SPEED = .2;
+        const Y_SPEED = 0.0003;
+        const VARIANCE = 0.01;
+        const COLOR_SPEED = 0.003;
+
+        const SHIFT_FACTOR = 0.0001;
+
+        let backgroundGradient;
+        function setup() {
+            createCanvas(screen.width, screen.height);
+            noiseDetail(2,.75);
+
+            backgroundGradient = drawingContext.createLinearGradient(0,0,0,height);
+            backgroundGradient.addColorStop(1,"black");
+            backgroundGradient.addColorStop(.5,"#000f20");
+            backgroundGradient.addColorStop(0,"#004040");
+            noStroke();
+
+            color1 = color("#55F0FF");
+            color2 = color("#0520FF");
+            color3 = color("#00EEEE");
+            color4 = color("#00F020");
+        }
+
+        function draw() {
+            drawingContext.fillStyle = backgroundGradient;
+            rect(0,0,width,height);
+
+            for (let fish = 0; fish < FISH_COUNT; fish++) {
+                drawingContext.fillStyle = lerpColor(
+                    lerpColor(color1, color2, pin(noise(fish, millis() * COLOR_SPEED * noise(fish,100), 20))),
+                    lerpColor(color3, color4, pin(noise(fish, millis() * COLOR_SPEED * noise(fish,100), 25))),
+                    pin(noise(fish, millis() * COLOR_SPEED * noise(fish,100), 30))
+                ).toString();
+
+                let x = (
+                        millis() * X_SPEED * noise(fish * VARIANCE,0) // Individual speed
+                        + noise(fish * VARIANCE, 2) * width * 1000     // Spread out
+                        + millis() * X_SPEED                          // Minimum speed
+                    ) % (width + FISH_SIZE * 2) - FISH_SIZE;
+                circle(
+                    x,
+                    noise(fish * VARIANCE, x * Y_SPEED, 1 + millis() * SHIFT_FACTOR) * height * 2 - height * .4,
+                    noise(fish, millis() * Y_SPEED, 10) * FISH_SIZE);
+            }
+        }
+
+        function pin(v) {
+            return constrain(v * 3 - 1, 0, 1);
+        }
+    </script>
+</body>
+</html>

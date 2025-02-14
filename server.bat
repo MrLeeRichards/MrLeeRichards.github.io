@@ -1,1 +1,1 @@
-python -m http.server
+py -m http.server
