@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random KJV Verse</title>
+   <link rel="stylesheet" href="/includes/base.css">
+</head>
+<body>
+    <div class="Main">
+        <div>
+            <div class="TableDisplay">
+                <div>
+                    <div>
+                        <button onclick="PreviousVerse()">◀</button>
+                    </div>
+                    <div>
+                        <button onclick="RandomVerse()">🎲</button>
+                    </div>
+                    <div>
+                        <button onclick="NextVerse()">▶</button>
+                    </div>
+                </div>
+            </div>
+            <div id="divVerseDisplay" class="paragraph">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        let verseList;
+        let verseIndex;
+        const divVerseDisplay = document.getElementById("divVerseDisplay");
+
+        async function GetText() {
+            const verses = await fetch("/includes/kjv.txt");
+            let verseText = await verses.text();
+            verseText = verseText.replaceAll("[", '<em>').replaceAll("]", '</em>')
+            verseList = verseText.split("\n");
+
+            RandomVerse();
+        }
+
+        function RandomVerse() {
+            verseIndex = Math.floor(Math.random() * verseList.length);
+
+            divVerseDisplay.innerHTML = verseList[verseIndex];
+        }
+
+        function NextVerse() {
+            verseIndex += 1;
+            divVerseDisplay.innerHTML = verseList[verseIndex];
+        }
+
+        function PreviousVerse() {
+            verseIndex -= 1;
+            divVerseDisplay.innerHTML = verseList[verseIndex];
+        }
+
+        GetText();
+    </script>
+</body>
+</html>
