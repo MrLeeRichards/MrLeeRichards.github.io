@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "foswig": "^1.1.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "npm": "^6.9.0",
     "p5": "^1.4.0",
     "seedrandom": "^2.4.3",
